@@ -80,6 +80,7 @@
     helm-swoop
     helm-themes
     highlight
+    highlight-indentation
     highlight-numbers
     hippie-exp
     hl-anything
@@ -570,6 +571,10 @@ which require an initialization must be listed explicitly in the list.")
                                              (iedit  . "firebrick1")
                                              (iedit-insert  . "firebrick1"))
         "Colors assigned to evil states.")
+
+      ;; put back refresh of the cursor on post-command-hook see status of:
+      ;; https://bitbucket.org/lyro/evil/issue/502/cursor-is-not-refreshed-in-some-cases
+      (add-hook 'post-command-hook 'evil-refresh-cursor)
 
       (defun spacemacs/state-color-face (state)
         "Return the symbol of the face for the given STATE."
@@ -1703,7 +1708,6 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
         ;; be sure to wipe any previous micro-state flag
         (setq spacemacs--ido-navigation-ms-enabled nil)
         ;; overwrite the key bindings for ido vertical mode only
-        (define-key ido-completion-map (kbd "C-d") 'ido-delete-file-at-head)
         (define-key ido-completion-map (kbd "C-<return>") 'ido-select-text)
         ;; use M-RET in terminal
         (define-key ido-completion-map "\M-\r" 'ido-select-text)
