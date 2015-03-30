@@ -55,8 +55,8 @@
   "bK"  'kill-other-buffers
   "bk"  'ido-kill-buffer
   "b C-k" 'kill-matching-buffers-rudely
-  "bn"  'switch-to-next-buffer
-  "bp"  'switch-to-prev-buffer
+  "bn"  'spacemacs/next-real-buffer
+  "bp"  'spacemacs/prev-real-buffer
   "bR"  'spacemacs/safe-revert-buffer
   "br"  'rename-current-buffer-file
   "bw"  'toggle-read-only)

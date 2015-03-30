@@ -275,27 +275,47 @@ argument takes the kindows rotate backwards."
               (setq i next-i)))))))
 
 (defun rotate-windows-backward (count)
- "Rotate your windows backward."
+  "Rotate your windows backward."
   (interactive "p")
   (rotate-windows (* -1 count)))
 
-(defun spacemacs/next-real-buffer ()
-  "Swtich to the next buffer and avoid special buffers."
+(defcustom spacemacs-interesting-buffers
+  '("*eshell*" "*scratch*")
+  "The regexp list that match interesting buffers.
+Buffer candidates matching these regular expressions will be used
+when switching to next/previous buffer."
+  :type  '(repeat (choice regexp))
+  :group 'spacemacs)
+
+(defcustom spacemacs-boring-buffer-regexp-list
+  '("\\` " "\\*helm" "\\*helm-mode" "\\*Echo Area" "\\*Minibuf")
+  "The regexp list that match boring buffers.
+Buffer candidates matching these regular expression will be
+ignored when switching to next/previous buffer."
+  :type  '(repeat (choice regexp))
+  :group 'spacemacs)
+
+(defun boring-buffer-p (buffer-name)
+  (catch 'found
+    (mapc (lambda (regexp)
+            (message "buffer name: %s" buffer-name)
+            (when (and (not (member buffer-name spacemacs-interesting-buffers))
+                       (string-match regexp buffer-name))
+              (throw 'found t)))
+          spacemacs-boring-buffer-regexp-list)
+    nil))
+
+(defun  spacemacs/next-real-buffer ()
   (interactive)
-  (switch-to-next-buffer)
-  (let ((i 0))
-    (while (and (< i 100) (string-equal "*" (substring (buffer-name) 0 1)))
-      (1+ i)
-      (switch-to-next-buffer))))
+  (next-buffer)
+  (while (boring-buffer-p (buffer-name (current-buffer)))
+    (next-buffer)))
 
 (defun spacemacs/prev-real-buffer ()
-  "Swtich to the previous buffer and avoid special buffers."
   (interactive)
-  (switch-to-prev-buffer)
-  (let ((i 0))
-    (while (and (< i 100) (string-equal "*" (substring (buffer-name) 0 1)))
-      (1+ i)
-      (switch-to-prev-buffer))))
+  (previous-buffer)
+  (while (boring-buffer-p (buffer-name (current-buffer)))
+    (previous-buffer)))
 
 (defun spacemacs/kill-this-buffer ()
   "Kill the current buffer."
