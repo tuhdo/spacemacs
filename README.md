@@ -1,9 +1,23 @@
+[![Build Status](https://travis-ci.org/syl20bnr/spacemacs.svg)](https://travis-ci.org/syl20bnr/spacemacs) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/syl20bnr/spacemacs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)[![Twitter][]](http://www.twitter.com/spacemacs)
 ***
 <p align="center"><img src="./doc/img/title2.png" alt="Spacemacs"/></p>
-
-| [philosophy][] | [goals][] | [for whom?][] | [screenshots][] | [documentation][DOCUMENTATION.md] | [contribute][CONTRIBUTE.md] | [achievements][] | [FAQ][] |
-***
-[![Build Status](https://travis-ci.org/syl20bnr/spacemacs.svg)](https://travis-ci.org/syl20bnr/spacemacs) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/syl20bnr/spacemacs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)[![Twitter][]](http://www.twitter.com/spacemacs)
+<p align="center">
+<b><a href="doc/DOCUMENTATION.md#philosophy">philosophy</a></b>
+|
+<b><a href="doc/DOCUMENTATION.md#goals">goals</a></b>
+|
+<b><a href="doc/DOCUMENTATION.md#who-can-benefit-from-this-">for whom?</a></b>
+|
+<b><a href="doc/DOCUMENTATION.md#screenshots">screenshots</a></b>
+|
+<b><a href="doc/DOCUMENTATION.md">documentation</a></b>
+|
+<b><a href="doc/CONTRIBUTE.md">contribute</a></b>
+|
+<b><a href="doc/DOCUMENTATION.md#achievements">achievements</a></b>
+|
+<b><a href="#faq">FAQ</a></b>
+</p>
 ***
 
 **Quick Install:**
@@ -17,7 +31,7 @@
 - [Features](#features)
     - [Batteries Included](#batteries-included)
     - [Nice UI](#nice-ui)
-    - [Excellent Evil Support](#excellent-evil-support)
+    - [Excellent ergonomics](#excellent-ergonomics)
     - [Convenient and Mnemonic Key Bindings](#convenient-and-mnemonic-key-bindings)
         - [Great [Documentation][DOCUMENTATION.MD]](#great-documentationdocumentationmd)
 - [Prerequisites](#prerequisites)
@@ -32,8 +46,9 @@
     - [Configuration layers](#configuration-layers)
     - [Dotfile (.spacemacs)](#dotfile-spacemacs)
 - [Learning Spacemacs](#learning-spacemacs)
-    - [Evil-tutor](#evil-tutor)
+    - [Editing Styles](#editing-styles)
     - [The leader key](#the-leader-key)
+    - [Evil-tutor](#evil-tutor)
     - [Universal argument](#universal-argument)
     - [Configuration layers and Package discovery](#configuration-layers-and-package-discovery)
     - [Key bindings discovery](#key-bindings-discovery)
@@ -49,69 +64,68 @@
 
 # Introduction
 
-`Spacemacs` is a user-friendly and well-documented Emacs kit that integrates the
-best Emacs packages out there. It uses [Evil Mode][] to combine the ergonomic
-editing features of Vim with the extensibility of Emacs.
+_You are a Vim user ?_
 
-Spacemacs is designed to be approachable for users coming from Vim–you do not
-need prior experience with Emacs to get started.
+You do not need to know Emacs to use Spacemacs!
+
+_You are an Emacs user ?_
+
+You do not need to know Vim to use Spacemacs!
+
+Since version 0.101.0 and later Spacemacs totally abolishes the frontiers
+between Vim and Emacs. The user can now choose his/her preferred editing
+style and enjoy all the Spacemacs features.
+
+Even better, it is possible to dynamically switch between the two
+styles _seamlessly_ which makes it possible for programmers with different
+styles to do seat pair programming using the _same_ editor.
+
+Since switching between the two styles is so simple, Spacemacs is the perfect
+setup to learn the "other way" or even crazier, to get the best of both
+worlds by developing your own hybrid style.
+
+Spacemacs is also a user-friendly and well-documented Emacs kit that
+integrates the best Emacs packages out there. It uses [Evil Mode][] to combine
+the ergonomic editing features of Vim and Emacs with the flexibility of a
+lisp powered engine.
 
 If you are already an experienced Emacs user, you will appreciate the elegantly
 customized system and carefully curated, tightly integrated, set of packages.
 
-Spacemacs is currently in beta, and contributions are welcome.
+Spacemacs is currently in beta, and contributions are very welcome.
 
 # Features
 
 ## Batteries Included
 
-Spacemacs integrates hundreds of packages and is ready to use with no additional
-configuration. It provides excellent support for many languages, including these:
+Spacemacs integrates hundreds of ready-to-use packages thanks to a
+community-driven approach.
 
-- [Elixir][]
-- [Haskell][]
-- [JavaScript][]
-- [LaTeX][]
-- [Python][]
-- [R][]
-- [Ruby][]
-- SCSS
-- [Scala][]
-- [Clojure][]
-- [C-C++][]
-
-It also ships with [Git support][] and [project management][] tools. All
-features are lazily loaded (on-demand) to minimize startup time.
-
-The Spacemacs community provides [additional configurations][contrib layers]
-that extend this default distribution.
+Those packages are grouped in [layers][] and their configuration follow a set
+of rules gathered in [CONVENTIONS.md][].
 
 **[Visit the Documentation][DOCUMENTATION.MD]**
 
 ## Nice UI
 
-Spacemacs looks good. It ships with quality themes and a minimalist
-modeline.
+Spacemacs looks good. It ships with quality themes and a beautiful mode-line.
 
 ![spacemacs_python](doc/img/spacemacs-python.png)
 
-## Excellent Evil Support
+## Excellent ergonomics
 
-Spacemacs is designed around Vim keyboard bindings powered by [Evil Mode][].
-The core packages are customized to integrate seamlessly with Evil.
+Spacemacs is designed around the [Evil Mode][] and a leader key. All the
+packages are customized to integrate seamlessly with Evil.
 
-Spacemacs improves upon Vim by using task-specific states to group related
-commands. These states reduce the keystrokes needed to issue repetitive commands
-and reduce the number of keyboard bindings to learn.
+Spacemacs also define micro-states to group related commands. These
+micro-states reduce the keystrokes needed to issue repetitive commands and
+reduce the number of keyboard bindings to learn.
 
 ## Convenient and Mnemonic Key Bindings
 
 `Spacemacs` organizes key bindings into mnemonic groups. For example, commands
 to operate on the buffer are prefixed by `<SPC> b`, and commands to operate on
 the project are under `<SPC> p`.
-
-There is no need to learn convoluted Emacs key chords–Spacemacs uses memorable
-bindings that are easy to type.
 
 ### Great [Documentation][DOCUMENTATION.MD]
 
@@ -180,7 +194,7 @@ guide and consult the [FAQ](#faq).
 ## Spacemacs logo
 
 If you are using Ubuntu and Unity then you can add the Spacemacs logo by
-following the instructions [here][cpaulik-unity-icon]
+following the instructions [here][cpaulik-unity-icon].
 
 # Update
 
@@ -297,21 +311,35 @@ the documentation for more details.
 
 # Learning Spacemacs
 
-## Evil-tutor
+## Editing Styles
 
-Press <kbd>SPC h T</kbd> to begin an Evil-adapted Vimtutor.
+Spacemacs can be used by Vim users or Emacs users by setting the
+`dotspacemacs-editing-style` variable to `vim` or `emacs` in the dotfile
+`~/.spacemacs`.
 
 ## The leader key
 
 `Spacemacs` key bindings use a leader key which is by default bound to
-<kbd>SPC</kbd> (space bar).
+<kbd>SPC</kbd> (space bar) in `vim` editing style and <kbd>M-m</kbd> in
+`emacs` style.
 
-Change it by setting the variable `dotspacemacs-leader-key` in `~/.spacemacs`.
+You can change it by setting the variable `dotspacemacs-leader-key` if
+you use the `vim` style or `dotspacemacs-emacs-leader-key` if you use
+the `emacs` style (these variables must be set in the file `~/.spacemacs`).
+
+For simplicity the documentation always refers to the leader key as
+<kbd>SPC</kbd>.
+
+## Evil-tutor
+
+If you are willing to learn the Vim key bindings (highly recommended since
+you can benefit from them even in `emacs` style), press <kbd>SPC h T</kbd>
+to begin an Evil-adapted Vimtutor.
 
 ## Universal argument
 
-In `Spacemacs` the universal argument defaults to `<SPC> u` instead of `C-u`
-because the latter is used to scroll up as in Vim.
+In `vim` editing style the universal argument defaults to `<SPC> u`
+instead of `C-u` because the latter is used to scroll up as in Vim.
 
 ## Configuration layers and Package discovery
 
@@ -356,7 +384,9 @@ Key Binding   |                 Description
 We especially need to create more configuration layers that, for instance, bring
 support for new languages.
 
-If you are ready to contribute please begin by consulting the [contribution guidelines][CONTRIBUTE.md], thanks!
+If you are ready to contribute please begin by consulting the
+[contribution guidelines][CONTRIBUTE.md] and [conventions][CONVENTIONS.md],
+thanks!
 
 # Credits
 
@@ -413,15 +443,11 @@ the [emacs-mac-port][] build. See the [install OSX section][] for more
 details.
 
 [Twitter]: http://i.imgur.com/tXSoThF.png
-[philosophy]: doc/DOCUMENTATION.md#philosophy
-[goals]: doc/DOCUMENTATION.md#goals
-[for whom?]: doc/DOCUMENTATION.md#who-can-benefit-from-this-
-[screenshots]: doc/DOCUMENTATION.md#screenshots
+[CONVENTIONS.md]: doc/CONVENTIONS.md
 [config]: doc/DOCUMENTATION.md#configuration-layers
 [dotfile]: doc/DOCUMENTATION.md#dotfile-configuration
 [manage_config]: doc/DOCUMENTATION.md#managing-private-configuration-layers
 [using_package_buf]: doc/DOCUMENTATION.md#using-the-package-list-buffer
-[achievements]: doc/DOCUMENTATION.md#achievements
 [troubleshoot]: doc/DOCUMENTATION.md#troubleshoot
 [contrib layers]: doc/DOCUMENTATION.md#using-configuration-layers
 [Git support]: contrib/git/README.md

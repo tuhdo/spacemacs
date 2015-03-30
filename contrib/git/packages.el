@@ -13,6 +13,8 @@
 (defvar git-packages
   '(
     fringe-helper
+    gitconfig-mode
+    git-commit-mode
     git-messenger
     git-rebase-mode
     git-timemachine
@@ -50,6 +52,14 @@ which require an initialization must be listed explicitly in the list.")
         "ggl" 'gist-list
         "ggr" 'gist-region
         "ggR" 'gist-region-private))))
+
+(defun git/init-git-commit-mode ()
+  (use-package git-commit-mode
+    :defer t
+    :config
+    (evil-leader/set-key-for-mode 'git-commit-mode
+      "mcc" 'git-commit-commit
+      "mk" 'git-commit-abort)))
 
 (defun init-git-gutter ()
   "Common initialization of git-gutter."
@@ -129,8 +139,16 @@ which require an initialization must be listed explicitly in the list.")
 (defun git/init-git-rebase-mode ()
   (use-package git-rebase-mode
     :defer t
-    :init (evilify git-rebase-mode git-rebase-mode-map
-                   "y" 'git-rebase-insert)))
+    :config
+    (progn
+      (evilify git-rebase-mode git-rebase-mode-map
+               "J" 'git-rebase-move-line-down
+               "K" 'git-rebase-move-line-up
+               "u" 'git-rebase-undo
+               "y" 'git-rebase-insert)
+      (evil-leader/set-key-for-mode 'git-rebase-mode
+        "mcc" 'git-rebase-server-edit
+        "mk" 'git-rebase-abort))))
 
 (defun git/init-git-timemachine ()
   (use-package git-timemachine
@@ -163,6 +181,10 @@ which require an initialization must be listed explicitly in the list.")
         ("N" git-timemachine-show-previous-revision)
         ("Y" git-timemachine-kill-revision)
         ("q" nil :exit t)))))
+
+(defun git/init-gitconfig-mode ()
+  (use-package gitconfig-mode
+    :defer t))
 
 ;; this mode is not up to date
 ;; any contributor to make it up to date is welcome:
