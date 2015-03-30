@@ -41,12 +41,8 @@ which require an initialization must be listed explicitly in the list.")
 )
 (defun go/init-company-go ()
  (use-package company-go
-   :if (configuration-layer/package-declaredp 'company)
+   :if (configuration-layer/layer-declaredp 'company-mode)
    :defer t
    :init
    (progn
-     (spacemacs|reset-local-company-backends go-mode)
-     (defun spacemacs//go-company-backend ()
-       (push (spacemacs/company-backend-with-yas 'company-go)
-             company-backends))
-   (add-hook 'go-mode-hook 'spacemacs//go-company-backend t))))
+     (spacemacs|add-local-company-backend go-mode company-go))))

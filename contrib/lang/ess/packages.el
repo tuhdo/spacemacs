@@ -143,13 +143,8 @@ not play nicely with autoloads"
 
 (defun ess/init-company-ess ()
   (use-package company-ess
-    :if (configuration-layer/package-declaredp 'company)
+    :if (configuration-layer/layer-declaredp 'company-mode)
     :defer t
     :init
     (progn
-      (spacemacs|reset-local-company-backends ess-mode)
-      (defun spacemacs//ess-company-backend ()
-        "Add ESS company backend."
-        (push (spacemacs/company-backend-with-yas 'company-ess-backend)
-              company-backends))
-      (add-hook 'ess-mode-hook 'spacemacs//ess-company-backend t))))
+      (spacemacs|add-local-company-backend ess-mode company-ess-backend))))

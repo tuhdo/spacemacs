@@ -47,8 +47,10 @@
 (evil-leader/set-key
   "b0"  'beginning-of-buffer
   "b$"  'end-of-buffer
+  "bd"  'spacemacs/kill-this-buffer
   "bb"  'spacemacs/alternate-buffer ;; switch back and forth between two last buffers
   "TAB" 'spacemacs/alternate-buffer
+  "bh"  'spacemacs/home
   "be"  'spacemacs/safe-erase-buffer
   "bK"  'kill-other-buffers
   "bk"  'ido-kill-buffer
@@ -284,9 +286,6 @@ Ensure that helm is required before calling FUNC."
   "w="  'balance-windows)
 ;; text -----------------------------------------------------------------------
 (evil-leader/set-key
-  "zx="  'spacemacs/reset-font-size
-  "zx+"  'spacemacs/scale-up-font
-  "zx-"  'spacemacs/scale-down-font
   "xdw" 'delete-trailing-whitespace
   "xtc" 'transpose-chars
   "xtl" 'transpose-lines
@@ -313,6 +312,20 @@ Ensure that helm is required before calling FUNC."
 ;; ---------------------------------------------------------------------------
 ;; Micro-states
 ;; ---------------------------------------------------------------------------
+
+;; Buffer micro state
+
+(spacemacs|define-micro-state buffer
+  :doc "[n] next [N] previous [K] kill"
+  :disable-evil-leader t
+  :use-minibuffer t
+  :evil-leader "b."
+  :bindings
+  ("K" spacemacs/kill-this-buffer)
+  ("n" spacemacs/next-real-buffer)
+  ("N" spacemacs/prev-real-buffer))
+
+;; end of Buffer micro state
 
 ;; Window Manipulation Micro State
 
@@ -427,3 +440,42 @@ Ensure that helm is required before calling FUNC."
   ("w" other-window                          :doc (spacemacs//window-manipulation-move-doc)))
 
 ;; end of Window Manipulation Micro State
+
+;; text Manipulation Micro State
+
+(defun spacemacs/scale-up-or-down-font-size (direction)
+  "Scale the font. If DIRECTION is positive or zero the font is scaled up,
+otherwise it is scaled down."
+  (interactive)
+  (let ((scale 0.5))
+    (if (eq direction 0)
+        (text-scale-set 0)
+      (if (< direction 0)
+          (text-scale-decrease scale)
+        (text-scale-increase scale)))))
+
+(defun spacemacs/scale-up-font ()
+  "Scale up the font."
+  (interactive)
+  (spacemacs/scale-up-or-down-font-size 1))
+
+(defun spacemacs/scale-down-font ()
+  "Scale up the font."
+  (interactive)
+  (spacemacs/scale-up-or-down-font-size -1))
+
+(defun spacemacs/reset-font-size ()
+  "Reset the font size."
+  (interactive)
+  (spacemacs/scale-up-or-down-font-size 0))
+
+(spacemacs|define-micro-state scale-font
+  :doc "[+] scale up [-] scale down [=] reset font"
+  :evil-leader "zx"
+  :use-minibuffer t
+  :bindings
+  ("+" spacemacs/scale-up-font)
+  ("-" spacemacs/scale-down-font)
+  ("=" spacemacs/reset-font-size))
+
+;; end of Text Manipulation Micro State

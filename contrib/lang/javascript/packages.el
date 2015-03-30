@@ -165,14 +165,8 @@ which require an initialization must be listed explicitly in the list.")
 (defun javascript/init-company-tern ()
   (use-package company-tern
     :if (and (configuration-layer/package-declaredp 'tern)
-             (configuration-layer/package-declaredp 'company))
+             (configuration-layer/layer-declaredp 'company-mode))
     :defer t
     :init
     (progn
-      (spacemacs|reset-local-company-backends tern-mode)
-      (defun spacemacs//tern-company-backend ()
-        "Add tern company backend."
-        (push (spacemacs/company-backend-with-yas 'company-tern)
-              company-backends))
-      (add-hook 'tern-mode-hook 'spacemacs//tern-company-backend t))))
-
+      (spacemacs|add-local-company-backend tern-mode company-tern))))

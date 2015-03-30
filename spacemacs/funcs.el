@@ -279,6 +279,29 @@ argument takes the kindows rotate backwards."
   (interactive "p")
   (rotate-windows (* -1 count)))
 
+(defun spacemacs/next-real-buffer ()
+  "Swtich to the next buffer and avoid special buffers."
+  (interactive)
+  (switch-to-next-buffer)
+  (let ((i 0))
+    (while (and (< i 100) (string-equal "*" (substring (buffer-name) 0 1)))
+      (1+ i)
+      (switch-to-next-buffer))))
+
+(defun spacemacs/prev-real-buffer ()
+  "Swtich to the previous buffer and avoid special buffers."
+  (interactive)
+  (switch-to-prev-buffer)
+  (let ((i 0))
+    (while (and (< i 100) (string-equal "*" (substring (buffer-name) 0 1)))
+      (1+ i)
+      (switch-to-prev-buffer))))
+
+(defun spacemacs/kill-this-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
 ;; from magnars
 (defun rename-current-buffer-file ()
   "Renames current buffer and file it is visiting."
@@ -528,6 +551,12 @@ For instance pass En as source for english."
   (let ((newbuf (generate-new-buffer-name "untitled")))
     (switch-to-buffer newbuf)))
 
+(defun spacemacs/home ()
+  "Go to home Spacemacs buffer"
+  (interactive)
+  (switch-to-buffer "*spacemacs*")
+  )
+
 ;; from https://github.com/gempesaw/dotemacs/blob/emacs/dg-defun.el
 (defun kill-matching-buffers-rudely (regexp &optional internal-too)
   "Kill buffers whose name matches the specified REGEXP. This
@@ -547,11 +576,19 @@ kill internal buffers too."
 (defvar spacemacs-really-kill-emacs nil
   "prevent window manager close from closing instance.")
 
+(defun spacemacs-persistent-server-running-p ()
+  "Requires spacemacs-really-kill-emacs to be toggled and
+dotspacemacs-persistent-server to be t"
+  (and (fboundp 'server-running-p)
+       (server-running-p)
+       dotspacemacs-persistent-server))
+
 (defadvice kill-emacs (around spacemacs-really-exit activate)
   "Only kill emacs if a prefix is set"
-  (if (or spacemacs-really-kill-emacs (not dotspacemacs-persistent-server))
-      ad-do-it
-    (spacemacs/frame-killer)))
+  (if (and (not spacemacs-really-kill-emacs)
+           (spacemacs-persistent-server-running-p))
+      (spacemacs/frame-killer)
+    ad-do-it))
 
 (defadvice save-buffers-kill-emacs (around spacemacs-really-exit activate)
   "Only kill emacs if a prefix is set"
@@ -643,55 +680,6 @@ toggling fullscreen."
 	     (if (eq (frame-parameter nil 'maximized) 'maximized)
 		 'maximized)
 	   'fullboth)))))
-
-;;; begin scale font micro-state
-
-(defun spacemacs/scale-font-size-overlay-map ()
-  "Set a temporary overlay map to easily change the font size."
-  (set-temporary-overlay-map
-   (let ((map (make-sparse-keymap)))
-     (define-key map (kbd "+") 'spacemacs/scale-up-font)
-     (define-key map (kbd "-") 'spacemacs/scale-down-font)
-     (define-key map (kbd "=") 'spacemacs/reset-font-size)
-     map) t))
-
-(defun spacemacs/font-scaling-micro-state-doc ()
-  "Display a short documentation in the mini buffer."
-  (echo "Scale Font micro-state:
-  + to scale up
-  - to scale down
-  = to reset
-Press any other key to exit."))
-
-(defun spacemacs/scale-up-or-down-font-size (direction)
-  "Scale the font. If DIRECTION is positive or zero the font is scaled up,
-otherwise it is scaled down."
-  (interactive)
-  (let ((scale 0.5))
-    (if (eq direction 0)
-        (text-scale-set 0)
-      (if (< direction 0)
-          (text-scale-decrease scale)
-        (text-scale-increase scale))))
-  (spacemacs/scale-font-size-overlay-map)
-  (spacemacs/font-scaling-micro-state-doc))
-
-(defun spacemacs/scale-up-font ()
-  "Scale up the font."
-  (interactive)
-  (spacemacs/scale-up-or-down-font-size 1))
-
-(defun spacemacs/scale-down-font ()
-  "Scale up the font."
-  (interactive)
-  (spacemacs/scale-up-or-down-font-size -1))
-
-(defun spacemacs/reset-font-size ()
-  "Reset the font size."
-  (interactive)
-  (spacemacs/scale-up-or-down-font-size 0))
-
-;;; end scale font micro-state
 
 (defmacro spacemacs|diminish (mode unicode &optional ascii)
   "Diminish MODE name in mode line to UNICODE or ASCII depending on the value
@@ -789,8 +777,26 @@ If ASCII si not provided then UNICODE is used instead."
   (let ((comint-buffer-maximum-size 0))
     (comint-truncate-buffer)))
 
-(defmacro spacemacs|reset-local-company-backends (mode)
+(defun spacemacs//make-company-backends-buffer-local ()
   "Helper to make `company-backends' buffer local and reset it."
-  `(add-hook ',(intern (format "%S-hook" mode))
-             (lambda ()
-               (set (make-variable-buffer-local 'company-backends) nil))))
+  (set (make-variable-buffer-local 'company-backends) nil))
+
+(defmacro spacemacs|add-local-company-backend (mode backend &optional with-yas)
+  "Helper macro to add local `company-mode' BACKEND for MODE.
+
+If WITH-YAS is non nil then the the `company-yasnippet' is consed to BACKEND."
+  (let ((mode-hook (intern (format "%S-hook" mode)))
+        (add-backend (intern (format "spacemacs//%S-add-%S-backend"
+                                     mode backend)))
+        (backend2 (if with-yas
+                      `(spacemacs/company-backend-with-yas ',backend)
+                    `(quote ,backend))))
+    `(when (configuration-layer/layer-declaredp 'company-mode)
+       (add-hook ',mode-hook
+                 'spacemacs//make-company-backends-buffer-local)
+       (defun ,add-backend ()
+         ,(format "Add %S backend to %S" backend mode)
+         (add-to-list 'company-backends ,backend2))
+       ;; important to append this function to the hook in order to
+       ;; execute it at the end
+       (add-hook ',mode-hook ',add-backend t))))

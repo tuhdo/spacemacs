@@ -88,6 +88,7 @@
     ido-vertical-mode
     info+
     iedit
+    indent-guide
     let-alist
     leuven-theme
     linum-relative
@@ -170,10 +171,13 @@ which require an initialization must be listed explicitly in the list.")
   (use-package ace-window
     :defer t
     :init
-    (evil-leader/set-key
-      "bM"  'ace-swap-window
-      "wC"  'ace-delete-window
-      "wW"  'ace-window)
+    (progn
+      (evil-leader/set-key
+        "bM"  'ace-swap-window
+        "wC"  'ace-delete-window
+        "w <SPC>"  'ace-window)
+      ;; set ace-window keys to home-row
+      (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
     :config
     (progn
       ;; add support for golden-ratio
@@ -713,10 +717,12 @@ which require an initialization must be listed explicitly in the list.")
       ;; pasting micro-state
       (defadvice evil-paste-before (after spacemacs/evil-paste-before activate)
         "Initate the paste micro-state after the execution of evil-paste-before"
-        (spacemacs/paste-micro-state))
+        (unless (evil-ex-p)
+          (spacemacs/paste-micro-state)))
       (defadvice evil-paste-after (after spacemacs/evil-paste-after activate)
         "Initate the paste micro-state after the execution of evil-paste-after"
-        (spacemacs/paste-micro-state))
+        (unless (evil-ex-p)
+          (spacemacs/paste-micro-state)))
       (defadvice evil-visual-paste (after spacemacs/evil-visual-paste activate)
         "Initate the paste micro-state after the execution of evil-visual-paste"
         (spacemacs/paste-micro-state))
@@ -831,9 +837,10 @@ which require an initialization must be listed explicitly in the list.")
   (use-package evil-jumper
     :init
     (progn
+      (setq evil-jumper-file (concat spacemacs-cache-directory "evil-jumps")
+            evil-jumper-auto-save-interval 3600)
       (evil-jumper-mode t)
-      (setq evil-jumper-file (concat spacemacs-cache-directory "evil-jumps"))
-      (setq evil-jumper-auto-save-interval 3600))))
+      )))
 
 (defun spacemacs/init-evil-leader ()
   (use-package evil-leader
@@ -1304,6 +1311,7 @@ which require an initialization must be listed explicitly in the list.")
       (evil-leader/set-key "tk" 'spacemacs/toggle-guide-key)
       (setq guide-key/guide-key-sequence `("C-x"
                                            "C-c"
+                                           "C-w"
                                            ,dotspacemacs-leader-key
                                            ,dotspacemacs-emacs-leader-key
                                            ,dotspacemacs-major-mode-leader-key
@@ -1313,6 +1321,8 @@ which require an initialization must be listed explicitly in the list.")
                                            ;; C-M-m in terminal
                                            "<ESC><RET>"
                                            "g"
+                                           "\["
+                                           "\]"
                                            "z"
                                            "C-h")
             guide-key/recursive-key-sequence-flag t
@@ -1809,6 +1819,24 @@ Put (global-hungry-delete-mode) in dotspacemacs/config to enable by default."
 (defun spacemacs/init-iedit ()
   (use-package iedit
     :defer t))
+
+(defun spacemacs/init-indent-guide ()
+  (use-package indent-guide
+    :defer t
+    :init
+    (progn
+      (setq indent-guide-delay 0.3)
+      (spacemacs|add-toggle global-indent-guide
+                            :status indent-guide-mode
+                            :on (indent-guide-global-mode)
+                            :off (indent-guide-global-mode -1)
+                            :documentation
+                            (concat  "Guide to highlight the current "
+                                     "indentation (alternative to the toggle"
+                                     "highlight-indentation-current-column).")
+                            :evil-leader "thI"))
+    :config
+    (spacemacs|diminish indent-guide-mode " ⓘ" " i")))
 
 (defun spacemacs/init-info+ ()
   (use-package info+
