@@ -757,12 +757,12 @@ toggling fullscreen."
    nil
    `((maximized
       . ,(unless (memq (frame-parameter nil 'fullscreen) '(fullscreen fullboth))
-	   (frame-parameter nil 'fullscreen)))
+     (frame-parameter nil 'fullscreen)))
      (fullscreen
       . ,(if (memq (frame-parameter nil 'fullscreen) '(fullscreen fullboth))
-	     (if (eq (frame-parameter nil 'maximized) 'maximized)
-		 'maximized)
-	   'fullboth)))))
+       (if (eq (frame-parameter nil 'maximized) 'maximized)
+     'maximized)
+     'fullboth)))))
 
 (defmacro spacemacs|diminish (mode unicode &optional ascii)
   "Diminish MODE name in mode line to UNICODE or ASCII depending on the value
@@ -872,3 +872,20 @@ If ASCII si not provided then UNICODE is used instead."
   (delete-region (point-min) (point-max))
   (clipboard-yank)
   (deactivate-mark))
+
+(defvar spacemacs-buffer-alist nil)
+
+(defsubst get-member-value (key plist)
+  (cadr (member key plist)))
+
+(defmacro spacemacs/add-special-buffer (regexp &rest args)
+  "Buffer for displaying in user defined widnow."
+  `(let ((position (get-member-value :position ',args))
+         (height (get-member-value :height ',args))
+         (width (get-member-value :width ',args)))
+     (add-to-list 'display-buffer-alist
+                  `(,,regexp
+                    (display-buffer-in-side-window ,position)
+                    (inhibit-same-window . t)
+                    (window-height . ,height)
+                    (window-width . ,width)))))
