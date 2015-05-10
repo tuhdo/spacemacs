@@ -906,3 +906,10 @@ indent yanked text (with prefix arg don't indent)."
                (member major-mode spacemacs-indent-sensitive-modes)))
       (let ((transient-mark-mode nil))
         (yank-advised-indent-function (region-beginning) (region-end)))))
+(defun save-buffer-if-visiting-file (&optional args)
+  "Save the current buffer only if it is visiting a file"
+  (interactive)
+  (if (and dotspacemacs-autosave-file-directly
+           (buffer-file-name)
+           (buffer-modified-p))
+      (save-buffer args)))
