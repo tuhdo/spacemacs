@@ -120,7 +120,7 @@ It runs `tabulated-list-revert-hook', then calls `tabulated-list-print'."
 ;; because it avoids autoloads of elisp modes)
 (setq initial-major-mode 'text-mode)
 ;; whitespace-mode
-(defcustom spacemacs-show-trailing-whitespace t
+(defcustom spacemacs-show-trailing-whitespace nil
   "If t, show trailing whitespace."
   :type 'boolean
   :group 'spacemacs)
